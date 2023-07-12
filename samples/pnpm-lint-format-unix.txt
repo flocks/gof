@@ -1,0 +1,10 @@
+
+> @ledgerhq/vault-cli@1.40.3 lint /home/fteissier/ledger/vault-ts/apps/cli
+> eslint . "--format=unix"
+
+/home/fteissier/ledger/vault-ts/apps/cli/src/cli.ts:12:7: 'a' is assigned a value but never used. [Warning/@typescript-eslint/no-unused-vars]
+/home/fteissier/ledger/vault-ts/apps/cli/src/index.ts:7:7: 'a' is assigned a value but never used. [Warning/@typescript-eslint/no-unused-vars]
+/home/fteissier/ledger/vault-ts/apps/cli/src/registerTransports.ts:14:7: 'b' is assigned a value but never used. [Warning/@typescript-eslint/no-unused-vars]
+
+3 problems
+

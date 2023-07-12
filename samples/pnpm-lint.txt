@@ -1,0 +1,9 @@
+> @ledgerhq/vault-cli@1.40.3 lint /home/fteissier/ledger/vault-ts/apps/cli
+> eslint .
+/home/fteissier/ledger/vault-ts/apps/cli/src/cli.ts
+   23:7  warning  'a' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  194:7  warning  'b' is assigned a value but never used  @typescript-eslint/no-unused-vars
+/home/fteissier/ledger/vault-ts/apps/cli/src/registerTransports.ts
+  14:8  warning  'b' is assigned a value but never used  @typescript-eslint/no-unused-vars
+✖ 3 problems (0 errors, 3 warnings)
+

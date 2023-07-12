@@ -1,0 +1,17 @@
+commit 0c76a97af87246001548f54c197d5d86e0ec54b9
+Author: Florent Teissier <teissierflorent@gmail.com>
+Date:   Tue Jul 11 14:36:54 2023 +0200
+
+    get rid of process.env.STORYBOOK_ACTIVE occurrences
+
+ src/Root.jsx                                      |  7 +++----
+ src/components/DeviceInteraction/index.jsx        |  4 +---
+ src/components/Onboarding/index.jsx               | 28 +++++++++++++---------------
+ src/components/legacy/DeviceInteraction/index.jsx |  5 +----
+ src/device/interactions/generateWrappingKeys.js   | 37 ++++++-------------------------------
+ src/device/interactions/hsmFlows.js               | 60 +++---------------------------------------------------------
+ src/network/fetchF.js                             | 10 +---------
+ src/notifications/Notification.jsx                |  2 --
+ src/notifications/useListenEvents.js              |  3 ---
+ 9 files changed, 28 insertions(+), 128 deletions(-)
+
