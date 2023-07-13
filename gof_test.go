@@ -137,12 +137,12 @@ func containsF(arr []Filematch, item Filematch) bool {
 func compareFiles(expected []Filematch, result []Filematch, t *testing.T) bool {
 	for _, val := range result {
 		if !containsF(expected, val) {
-			t.Fatalf(`file %v is missing in expected`, val)
+			t.Fatalf(`file %v is missing in expected`, val.filePath)
 		}
 	}
 	for _, val := range expected {
 		if !containsF(result, val) {
-			t.Fatalf(`file %v is missing in actual result`, val)
+			t.Fatalf(`file %v is missing in actual result`, val.filePath)
 		}
 	}
 
