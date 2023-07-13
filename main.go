@@ -37,8 +37,8 @@ func main() {
 		Name:  "gof",
 		Usage: "extract files from stdin",
 		Action: func(cCtx *cli.Context) error {
-      files := FindFiles(stdin)
-      printFiles(files)
+			files := FindFiles(stdin)
+			printFiles(files)
 			return nil
 		},
 	}
@@ -68,8 +68,8 @@ func FindFiles(input string) []Filematch {
 
 	for _, val := range files {
 		result = append(result, val)
-
 	}
+
 	return result
 }
 
