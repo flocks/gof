@@ -63,6 +63,24 @@ func TestLinterUnix(t *testing.T) {
 	}
 	compareFiles(expected, result, t)
 }
+func TestGrep(t *testing.T) {
+	FileExist = fileExist
+	input, _ := ioutil.ReadFile("./samples/grep.txt")
+	result := FindFiles(string(input))
+	expected := []Filematch{
+		{
+			filePath: "$PWD/src/components/DeviceInteraction/index.jsx",
+			line:     0,
+			col:      0,
+		},
+		{
+			filePath: "$PWD/src/components/Onboarding/index.jsx",
+			line:     0,
+			col:      0,
+		},
+	}
+	compareFiles(expected, result, t)
+}
 
 func TestGitStatus(t *testing.T) {
 	input, _ := ioutil.ReadFile("./samples/git-show.txt")

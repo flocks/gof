@@ -1,0 +1,14 @@
+
+> @ledgerhq/vault-cli@1.40.3 typecheck /home/fteissier/ledger/vault-ts/apps/cli
+> tsc --noEmit
+
+src/cli.ts:12:14 - error TS2322: Type 'number' is not assignable to type 'string'.
+
+12 export const a: string = 3;
+                ~
+
+
+Found 1 error in src/cli.ts:12
+
+ ELIFECYCLE  Command failed with exit code 2.
+
