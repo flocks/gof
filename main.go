@@ -93,6 +93,9 @@ func extractFilePath(_filePath string) string {
 		pwd, _ := os.LookupEnv("PWD")
 		filePath = pwd + "/" + filePath
 	}
+	if strings.HasSuffix(filePath, ":") {
+		filePath = filePath[0 : len(filePath)-1]
+	}
 	r, _ := regexp.Compile("[0-9]+:[0-9]+")
 	index := r.FindStringIndex(_filePath)
 
