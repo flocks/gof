@@ -7,19 +7,19 @@ import (
 )
 
 func fileExist(path string) bool {
-	os.Setenv("PWD", "/path/to/pwd")
+	os.Setenv("PWD", "$PWD")
 	files := []string{
 		"/home/fteissier/ledger/vault-ts/apps/cli/src/cli.ts",
 		"/home/fteissier/ledger/vault-ts/apps/cli/src/registerTransports.ts",
-		"/path/to/pwd/src/Root.jsx",
-		"/path/to/pwd/src/components/DeviceInteraction/index.jsx",
-		"/path/to/pwd/src/components/Onboarding/index.jsx",
-		"/path/to/pwd/src/components/legacy/DeviceInteraction/index.jsx",
-		"/path/to/pwd/src/device/interactions/generateWrappingKeys.js",
-		"/path/to/pwd/src/device/interactions/hsmFlows.js",
-		"/path/to/pwd/src/network/fetchF.js",
-		"/path/to/pwd/src/notifications/Notification.jsx",
-		"/path/to/pwd/src/notifications/useListenEvents.js",
+		"$PWD/src/Root.jsx",
+		"$PWD/src/components/DeviceInteraction/index.jsx",
+		"$PWD/src/components/Onboarding/index.jsx",
+		"$PWD/src/components/legacy/DeviceInteraction/index.jsx",
+		"$PWD/src/device/interactions/generateWrappingKeys.js",
+		"$PWD/src/device/interactions/hsmFlows.js",
+		"$PWD/src/network/fetchF.js",
+		"$PWD/src/notifications/Notification.jsx",
+		"$PWD/src/notifications/useListenEvents.js",
 	}
 	if contains(files, path) {
 		return true
@@ -69,47 +69,47 @@ func TestGitStatus(t *testing.T) {
 	result := FindFiles(string(input))
 	expected := []Filematch{
 		{
-			filePath: "/path/to/pwd/src/Root.jsx",
+			filePath: "$PWD/src/Root.jsx",
 			line:     0,
 			col:      0,
 		},
 		{
-			filePath: "/path/to/pwd/src/components/DeviceInteraction/index.jsx",
+			filePath: "$PWD/src/components/DeviceInteraction/index.jsx",
 			line:     0,
 			col:      0,
 		},
 		{
-			filePath: "/path/to/pwd/src/components/Onboarding/index.jsx",
+			filePath: "$PWD/src/components/Onboarding/index.jsx",
 			line:     0,
 			col:      0,
 		},
 		{
-			filePath: "/path/to/pwd/src/components/legacy/DeviceInteraction/index.jsx",
+			filePath: "$PWD/src/components/legacy/DeviceInteraction/index.jsx",
 			line:     0,
 			col:      0,
 		},
 		{
-			filePath: "/path/to/pwd/src/device/interactions/generateWrappingKeys.js",
+			filePath: "$PWD/src/device/interactions/generateWrappingKeys.js",
 			line:     0,
 			col:      0,
 		},
 		{
-			filePath: "/path/to/pwd/src/device/interactions/hsmFlows.js",
+			filePath: "$PWD/src/device/interactions/hsmFlows.js",
 			line:     0,
 			col:      0,
 		},
 		{
-			filePath: "/path/to/pwd/src/network/fetchF.js",
+			filePath: "$PWD/src/network/fetchF.js",
 			line:     0,
 			col:      0,
 		},
 		{
-			filePath: "/path/to/pwd/src/notifications/Notification.jsx",
+			filePath: "$PWD/src/notifications/Notification.jsx",
 			line:     0,
 			col:      0,
 		},
 		{
-			filePath: "/path/to/pwd/src/notifications/useListenEvents.js",
+			filePath: "$PWD/src/notifications/useListenEvents.js",
 			line:     0,
 			col:      0,
 		},
