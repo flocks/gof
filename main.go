@@ -28,10 +28,9 @@ func main() {
 		stdin = stdin + "\n" + scanner.Text()
 	}
 
-	// fmt.Println(stdin)
-
 	if scanner.Err() != nil {
 		// Handle error.
+		log.Fatal("Error while reading STDIN")
 	}
 	app := &cli.App{
 		Name:  "gof",
@@ -87,14 +86,15 @@ func _fileExist(filePath string) bool {
 	}
 }
 
+func trim(filepath string) string {
+	return strings.Trim(filepath, ":")
+}
+
 func extractFilePath(_filePath string) string {
-	filePath := _filePath
+	filePath := trim(_filePath)
 	if !strings.HasPrefix(filePath, "/") {
 		pwd, _ := os.LookupEnv("PWD")
 		filePath = pwd + "/" + filePath
-	}
-	if strings.HasSuffix(filePath, ":") {
-		filePath = filePath[0 : len(filePath)-1]
 	}
 	r, _ := regexp.Compile("[0-9]+:[0-9]+")
 	index := r.FindStringIndex(_filePath)
