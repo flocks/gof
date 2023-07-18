@@ -21,6 +21,13 @@ type Filematch struct {
 	desc     string // could potentially hold error/warning from program like linter
 }
 
+func (file1 Filematch) compareWith(file2 Filematch) bool {
+	return (file1.col == file2.col &&
+		file1.line == file2.line &&
+		file1.filePath == file2.filePath &&
+		file1.desc == file2.desc)
+}
+
 func main() {
 	stdin := ""
 	scanner := bufio.NewScanner(os.Stdin)

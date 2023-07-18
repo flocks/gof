@@ -1,2 +1,2 @@
-src/components/DeviceInteraction/index.jsx:  appVersion: string,
-src/components/Onboarding/index.jsx:    appVersion: window.config.APP_VERSION,
+src/components/DeviceInteraction/index.jsx:62:11:  appVersion: string,
+src/components/Onboarding/index.jsx:10:23:    appVersion: window.config.APP_VERSION,
