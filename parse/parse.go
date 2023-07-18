@@ -43,7 +43,7 @@ func getParser(regexpString string) func(string) Parsed {
 }
 
 func ParseSeparator() func(string) Parsed {
-	return getParser("[: | ,]")
+	return getParser("[:,]")
 }
 
 func ParseFilepathChar() func(string) Parsed {
@@ -62,7 +62,7 @@ func ParseNumber() func(string) Parsed {
 }
 
 func ParseFilePath(input string) Parsed {
-	p := TakeWhile(input, ParseSeparator())
+	p := TakeWhile(input, ParseWhitespace())
 	file := TakeWhile(p.rest, ParseFilepathChar())
 
 	return Parsed{
@@ -71,8 +71,8 @@ func ParseFilePath(input string) Parsed {
 	}
 }
 func ParseDesc(input string) Parsed {
-	p := TakeWhile(input, ParseSeparator())
-	desc := TakeWhile(p.rest, ParseAnything())
+	sep := TakeWhile(input, ParseSeparator())
+	desc := TakeWhile(sep.rest, ParseAnything())
 
 	return Parsed{
 		parsed: desc.parsed,
@@ -81,8 +81,9 @@ func ParseDesc(input string) Parsed {
 }
 
 func ParseFilePosition(input string) Parsed {
-	p := TakeWhile(input, ParseSeparator())
-	line := TakeWhile(p.rest, ParseNumber())
+	p := TakeWhile(input, ParseWhitespace())
+	s := TakeWhile(p.rest, ParseSeparator())
+	line := TakeWhile(s.rest, ParseNumber())
 	p = TakeWhile(line.rest, ParseSeparator())
 	col := TakeWhile(p.rest, ParseNumber())
 
@@ -105,11 +106,16 @@ func ParseLine(input string) (Filematch, error) {
 		line, _ = strconv.ParseInt(_position[0], 10, 0)
 		col, _ = strconv.ParseInt(_position[1], 10, 0)
 	}
+
+	descVal := desc.parsed
+	if col == 0 && line == 0 {
+		descVal = ""
+	}
 	return Filematch{
 		FilePath: file.parsed,
 		Line:     line,
 		Col:      col,
-		Desc:     desc.parsed,
+		Desc:     descVal,
 	}, nil
 
 }

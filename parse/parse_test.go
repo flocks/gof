@@ -9,6 +9,10 @@ func TestParseSeparator(t *testing.T) {
 	parsed := ParseSeparator()(":test")
 	expect(parsed, Parsed{parsed: ":", rest: "test"}, "separator")
 }
+func TestParseNotSeparator(t *testing.T) {
+	parsed := ParseSeparator()("|test")
+	expect(parsed, Parsed{parsed: "", rest: "|test"}, "separator")
+}
 
 func TestParseWhitespace(t *testing.T) {
 	parsed := ParseWhitespace()(" bob l")
@@ -44,7 +48,7 @@ func TestParseFile(t *testing.T) {
 }
 
 func TestParseDesc(t *testing.T) {
-	parsed := ParseDesc("     this a description of the error")
+	parsed := ParseDesc("this a description of the error")
 	expect(parsed, Parsed{parsed: "this a description of the error", rest: ""}, "parse-desc")
 }
 func TestParseFullLine(t *testing.T) {
@@ -53,11 +57,27 @@ func TestParseFullLine(t *testing.T) {
 		FilePath: "/home/bob/file.txt",
 		Line:     19,
 		Col:      25,
-		Desc:     "this is the error description",
+		Desc:     " this is the error description",
+	})
+}
+func TestParseFullGrepLine(t *testing.T) {
+	file, _ := ParseLine("src/components/DeviceInteraction/index.jsx:62:11:  appVersion: string,")
+	expectFile(file, Filematch{
+		FilePath: "src/components/DeviceInteraction/index.jsx",
+		Line:     62,
+		Col:      11,
+		Desc:     "  appVersion: string,",
 	})
 }
 func TestParseLineWithOnlyFile(t *testing.T) {
 	file, _ := ParseLine(" /home/bob/file.txt ")
+	expectFile(file, Filematch{
+		FilePath: "/home/bob/file.txt",
+	})
+}
+
+func TestParseLineWithOnlyFileWithGarbage(t *testing.T) {
+	file, _ := ParseLine(" /home/bob/file.txt    | 4 +--- ")
 	expectFile(file, Filematch{
 		FilePath: "/home/bob/file.txt",
 	})

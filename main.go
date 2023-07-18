@@ -3,30 +3,17 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/urfave/cli/v2"
+	. "github.com/flocks/gof/parse"
 	"log"
 	"os"
-	"regexp"
 	"strings"
+
+	"github.com/urfave/cli/v2"
 )
 
 var (
 	FileExist = _fileExist
 )
-
-type Filematch struct {
-	filePath string
-	line     int
-	col      int
-	desc     string // could potentially hold error/warning from program like linter
-}
-
-func (file1 Filematch) compareWith(file2 Filematch) bool {
-	return (file1.col == file2.col &&
-		file1.line == file2.line &&
-		file1.filePath == file2.filePath &&
-		file1.desc == file2.desc)
-}
 
 func main() {
 	stdin := ""
@@ -60,14 +47,13 @@ func FindFiles(input string) []Filematch {
 
 	lines := strings.Split(string(input), "\n")
 
-	for _, val := range lines {
-		words := strings.Split(val, " ")
-		for _, w := range words {
-
-			filePath := extractFilePath(w)
-			_, exist := files[filePath]
-			if FileExist(filePath) && !exist {
-				files[filePath] = Filematch{filePath: filePath}
+	for _, line := range lines {
+		file, err := ParseLine(line)
+		if err == nil {
+			fileWithPWD := updateFilePath(file)
+			_, exist := files[fileWithPWD.FilePath]
+			if FileExist(fileWithPWD.FilePath) && !exist {
+				files[fileWithPWD.FilePath] = fileWithPWD
 			}
 		}
 	}
@@ -79,9 +65,19 @@ func FindFiles(input string) []Filematch {
 	return result
 }
 
+func updateFilePath(file Filematch) Filematch {
+	if !strings.HasPrefix(file.FilePath, "/") {
+		pwd, _ := os.LookupEnv("PWD")
+		filePath := pwd + "/" + file.FilePath
+		file.FilePath = filePath
+	}
+	return file
+}
+
 func printFiles(files []Filematch) {
-	for _, val := range files {
-		fmt.Println(val.filePath)
+	for _, file := range files {
+		fmt.Printf(`%v:%v:%v:%v`, file.FilePath, file.Line, file.Col, file.Desc)
+		fmt.Println()
 	}
 }
 
@@ -91,23 +87,4 @@ func _fileExist(filePath string) bool {
 	} else {
 		return false
 	}
-}
-
-func trim(filepath string) string {
-	return strings.Trim(filepath, ":")
-}
-
-func extractFilePath(_filePath string) string {
-	filePath := trim(_filePath)
-	if !strings.HasPrefix(filePath, "/") {
-		pwd, _ := os.LookupEnv("PWD")
-		filePath = pwd + "/" + filePath
-	}
-	r, _ := regexp.Compile("[0-9]+:[0-9]+")
-	index := r.FindStringIndex(_filePath)
-
-	if index != nil && index[0] != 0 {
-		filePath = _filePath[:index[0]-1]
-	}
-	return filePath
 }

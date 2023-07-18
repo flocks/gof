@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+
+	. "github.com/flocks/gof/parse"
 )
 
 func init() {
@@ -32,63 +34,19 @@ func fileExist(path string) bool {
 	return false
 }
 
-func TestExtractingFiles(t *testing.T) {
-	compareExtracting("/home/fteissier/files.json:10:30", Filematch{
-		filePath: "/home/fteissier/files.json",
-		line:     10,
-		col:      30,
-		desc:     "",
-	}, t)
-
-	compareExtracting("/home/fteissier/files.json:10,30", Filematch{
-		filePath: "/home/fteissier/files.json",
-		line:     10,
-		col:      30,
-		desc:     "",
-	}, t)
-
-	compareExtracting("/home/fteissier/files.json:10,30 with some desc", Filematch{
-		filePath: "/home/fteissier/files.json",
-		line:     10,
-		col:      30,
-		desc:     " with some desc",
-	}, t)
-
-  compareExtracting("/home/fteissier/files.json:10:30: with some desc", Filematch{
-		filePath: "/home/fteissier/files.json",
-		line:     10,
-		col:      30,
-    desc:     ": with some desc",
-	}, t)
-
-	compareExtracting("/home/fteissier/files.json", Filematch{
-		filePath: "/home/fteissier/files.json",
-		line:     0,
-		col:      0,
-		desc:     "",
-	}, t)
-
-	compareExtracting("src/Root.jsx                                      |  7 +++---- ", Filematch{
-		filePath: "$PWD/src/Root.jsx",
-		col:      0,
-		line:     0,
-		desc:     "",
-	}, t)
-}
-
 func TestLinter(t *testing.T) {
 	input, _ := ioutil.ReadFile("./samples/pnpm-lint.txt")
 	result := FindFiles(string(input))
 	expected := []Filematch{
 		{
-			filePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/cli.ts",
-			line:     0,
-			col:      0,
+			FilePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/cli.ts",
+			Line:     0,
+			Col:      0,
 		},
 		{
-			filePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/registerTransports.ts",
-			line:     0,
-			col:      0,
+			FilePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/registerTransports.ts",
+			Line:     0,
+			Col:      0,
 		},
 	}
 	compareFiles(expected, result, t)
@@ -98,19 +56,22 @@ func TestLinterUnix(t *testing.T) {
 	result := FindFiles(string(input))
 	expected := []Filematch{
 		{
-			filePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/cli.ts",
-			line:     12,
-			col:      7,
+			FilePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/cli.ts",
+			Line:     12,
+			Col:      7,
+			Desc:     " 'a' is assigned a value but never used. [Warning/@typescript-eslint/no-unused-vars]",
 		},
 		{
-			filePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/index.ts",
-			line:     7,
-			col:      7,
+			FilePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/index.ts",
+			Line:     7,
+			Col:      7,
+			Desc:     " 'a' is assigned a value but never used. [Warning/@typescript-eslint/no-unused-vars]",
 		},
 		{
-			filePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/registerTransports.ts",
-			line:     14,
-			col:      7,
+			FilePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/registerTransports.ts",
+			Line:     14,
+			Col:      7,
+			Desc:     " 'b' is assigned a value but never used. [Warning/@typescript-eslint/no-unused-vars]",
 		},
 	}
 	compareFiles(expected, result, t)
@@ -120,14 +81,16 @@ func TestGrep(t *testing.T) {
 	result := FindFiles(string(input))
 	expected := []Filematch{
 		{
-			filePath: "$PWD/src/components/DeviceInteraction/index.jsx",
-			line:     62,
-			col:      11,
+			FilePath: "$PWD/src/components/DeviceInteraction/index.jsx",
+			Line:     62,
+			Col:      11,
+			Desc:     "  appVersion: string,",
 		},
 		{
-			filePath: "$PWD/src/components/Onboarding/index.jsx",
-			line:     10,
-			col:      23,
+			FilePath: "$PWD/src/components/Onboarding/index.jsx",
+			Line:     10,
+			Col:      23,
+			Desc:     "    appVersion: window.config.APP_VERSION,",
 		},
 	}
 	compareFiles(expected, result, t)
@@ -138,14 +101,10 @@ func TestGitStatus(t *testing.T) {
 	result := FindFiles(string(input))
 	expected := []Filematch{
 		{
-			filePath: "$PWD/src/Root.jsx",
-			line:     0,
-			col:      0,
+			FilePath: "$PWD/src/Root.jsx",
 		},
 		{
-			filePath: "$PWD/src/components/DeviceInteraction/index.jsx",
-			line:     0,
-			col:      0,
+			FilePath: "$PWD/src/components/DeviceInteraction/index.jsx",
 		},
 	}
 	compareFiles(expected, result, t)
@@ -161,7 +120,7 @@ func contains(arr []string, item string) bool {
 }
 func containsF(arr []Filematch, item Filematch) bool {
 	for _, val := range arr {
-		if val.compareWith(item) {
+		if val.CompareWith(item) {
 			return true
 		}
 	}
@@ -171,26 +130,13 @@ func containsF(arr []Filematch, item Filematch) bool {
 func compareFiles(expected []Filematch, result []Filematch, t *testing.T) bool {
 	for _, val := range result {
 		if !containsF(expected, val) {
-			t.Fatalf(`file %v is missing in expected`, val.filePath)
+			t.Fatalf(`file %v is missing in expected`, val.FilePath)
 		}
 	}
 	for _, val := range expected {
 		if !containsF(result, val) {
-			t.Fatalf(`file %v is missing in actual result`, val.filePath)
+			t.Fatalf(`file %v is missing in actual result`, val.FilePath)
 		}
-	}
-
-	return true
-}
-
-func compareExtracting(input string, expected Filematch, t *testing.T) bool {
-
-	result, err := ExtractFilePathFromLine(input)
-	if err != nil {
-		t.Fatalf(`No match found for %v`, expected.filePath)
-	}
-	if !result.compareWith(expected) {
-		t.Fatalf(`%v expected, got %v`, expected, result)
 	}
 
 	return true
