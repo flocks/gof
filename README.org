@@ -1,0 +1,35 @@
+*** Gof
+
+GOF is an experimental ad-hoc program I developed to address a common
+problem I often encounter while using the terminal. Frequently, I run
+commands like eslint or rg, which produce output containing file paths
+along with line and column numbers. I needed a quick way to extract
+and gather those file paths efficiently.
+
+GOF takes the output of these commands as standard input (stdin) and
+generates a list of the files present in the output.
+
+For instance:
+
+#+BEGIN_SRC bash
+  $ pnpm lint  | gof
+  /path/to/file:10:35 error description
+  /path/to/file2:10:35 error description
+  /path/to/file3:10:35 error description
+#+END_SRC
+
+In my workflow, GOF proves valuable because I can directly capture the
+output of the last command (thanks to Kitty, my terminal emulator) and
+pass it to gof. The result from GOF can then be sent to a script that
+opens Vim and populates the quickfix list with the extracted file
+paths.
+
+[[https://github.com/flocks/gof/raw/main/demo.gif]]
+
+*** Very experimental
+
+It's an ad-hoc solution for **my** workflow and is very
+experimental. See the /samples folder to check what kind of outputs
+it's able to parse
+
+
