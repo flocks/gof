@@ -4,11 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	. "github.com/flocks/gof/parse"
+	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"strings"
-
-	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -23,7 +22,6 @@ func main() {
 	}
 
 	if scanner.Err() != nil {
-		// Handle error.
 		log.Fatal("Error while reading STDIN")
 	}
 	app := &cli.App{
@@ -43,25 +41,68 @@ func main() {
 
 func FindFiles(input string) []Filematch {
 	var result []Filematch
-	files := make(map[string]Filematch)
+	var currentFileMatch *Filematch
 
 	lines := strings.Split(string(input), "\n")
 
 	for _, line := range lines {
-		file, err := ParseLine(line)
-		if err == nil {
-			fileWithPWD := updateFilePath(file)
-			_, exist := files[fileWithPWD.FilePath]
-			if FileExist(fileWithPWD.FilePath) && !exist {
-				files[fileWithPWD.FilePath] = fileWithPWD
+		fullLine, _ := ParseLine(line, true)
+		nestedLine, _ := ParseLine(line, false)
+
+		if hasOnlyError(nestedLine) && currentFileMatch != nil {
+			nestedLine.SetFile(currentFileMatch.FilePath)
+			result = append(result, nestedLine)
+		} else if fullLine.FilePath != "" {
+
+			if !strings.HasPrefix(fullLine.FilePath, "/") {
+				pwd, _ := os.LookupEnv("PWD")
+				filePath := pwd + "/" + fullLine.FilePath
+				fullLine.SetFile(filePath)
+			}
+			if FileExist(fullLine.FilePath) {
+				currentFileMatch = &fullLine
+				result = append(result, fullLine)
 			}
 		}
 	}
 
-	for _, val := range files {
-		result = append(result, val)
+	if hasAtLeastOneError(result) {
+		return removeFromList(result, func(file Filematch) bool {
+			return file.Col == 0 && file.Line == 0
+		})
 	}
 
+	return result
+}
+
+func hasOnlyFile(file Filematch) bool {
+	return file.Col == 0 && file.Line == 0 && file.Desc == "" && file.FilePath != ""
+}
+
+func hasError(file Filematch) bool {
+	return file.Col != 0 && file.Line != 0 && file.Desc != ""
+}
+
+func hasOnlyError(file Filematch) bool {
+	return hasError(file) && file.FilePath == ""
+}
+
+func hasAtLeastOneError(files []Filematch) bool {
+	for _, val := range files {
+		if val.Line != 0 || val.Col != 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func removeFromList(files []Filematch, predicate func(Filematch) bool) []Filematch {
+	var result []Filematch
+	for _, file := range files {
+		if !predicate(file) {
+			result = append(result, file)
+		}
+	}
 	return result
 }
 

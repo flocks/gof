@@ -40,13 +40,21 @@ func TestLinter(t *testing.T) {
 	expected := []Filematch{
 		{
 			FilePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/cli.ts",
-			Line:     0,
-			Col:      0,
+			Line:     23,
+			Col:      7,
+			Desc:     "  warning  'a' is assigned a value but never used  @typescript-eslint/no-unused-vars",
+		},
+		{
+			FilePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/cli.ts",
+			Line:     194,
+			Col:      7,
+			Desc:     "  warning  'b' is assigned a value but never used  @typescript-eslint/no-unused-vars",
 		},
 		{
 			FilePath: "/home/fteissier/ledger/vault-ts/apps/cli/src/registerTransports.ts",
-			Line:     0,
-			Col:      0,
+			Line:     14,
+			Col:      8,
+			Desc:     "  warning  'b' is assigned a value but never used  @typescript-eslint/no-unused-vars",
 		},
 	}
 	compareFiles(expected, result, t)

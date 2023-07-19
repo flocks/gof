@@ -52,7 +52,7 @@ func TestParseDesc(t *testing.T) {
 	expect(parsed, Parsed{parsed: "this a description of the error", rest: ""}, "parse-desc")
 }
 func TestParseFullLine(t *testing.T) {
-	file, _ := ParseLine(" /home/bob/file.txt 19:25 this is the error description")
+	file, _ := ParseLine(" /home/bob/file.txt 19:25 this is the error description", true)
 	expectFile(file, Filematch{
 		FilePath: "/home/bob/file.txt",
 		Line:     19,
@@ -61,7 +61,7 @@ func TestParseFullLine(t *testing.T) {
 	})
 }
 func TestParseFullGrepLine(t *testing.T) {
-	file, _ := ParseLine("src/components/DeviceInteraction/index.jsx:62:11:  appVersion: string,")
+	file, _ := ParseLine("src/components/DeviceInteraction/index.jsx:62:11:  appVersion: string,", true)
 	expectFile(file, Filematch{
 		FilePath: "src/components/DeviceInteraction/index.jsx",
 		Line:     62,
@@ -69,15 +69,23 @@ func TestParseFullGrepLine(t *testing.T) {
 		Desc:     "  appVersion: string,",
 	})
 }
+func TestParseLintLineWithoutFile(t *testing.T) {
+	file, _ := ParseLine(" 23:7  warning  'a' is assigned a value but never used  @typescript-eslint/no-unused-vars", false)
+	expectFile(file, Filematch{
+		Line: 23,
+		Col:  7,
+		Desc: "  warning  'a' is assigned a value but never used  @typescript-eslint/no-unused-vars",
+	})
+}
 func TestParseLineWithOnlyFile(t *testing.T) {
-	file, _ := ParseLine(" /home/bob/file.txt ")
+	file, _ := ParseLine(" /home/bob/file.txt ", true)
 	expectFile(file, Filematch{
 		FilePath: "/home/bob/file.txt",
 	})
 }
 
 func TestParseLineWithOnlyFileWithGarbage(t *testing.T) {
-	file, _ := ParseLine(" /home/bob/file.txt    | 4 +--- ")
+	file, _ := ParseLine(" /home/bob/file.txt    | 4 +--- ", true)
 	expectFile(file, Filematch{
 		FilePath: "/home/bob/file.txt",
 	})

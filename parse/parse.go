@@ -15,7 +15,7 @@ type Filematch struct {
 	FilePath string
 	Line     int64
 	Col      int64
-	Desc     string // could potentially hold error/warning from program like linter
+	Desc     string
 }
 
 func (file1 Filematch) CompareWith(file2 Filematch) bool {
@@ -23,6 +23,16 @@ func (file1 Filematch) CompareWith(file2 Filematch) bool {
 		file1.Line == file2.Line &&
 		file1.FilePath == file2.FilePath &&
 		file1.Desc == file2.Desc)
+}
+
+func (f *Filematch) SetCol(c int64) {
+	f.Col = c
+}
+func (f *Filematch) SetLine(l int64) {
+	f.Line = l
+}
+func (f *Filematch) SetFile(file string) {
+	f.FilePath = file
 }
 
 func getParser(regexpString string) func(string) Parsed {
@@ -75,6 +85,7 @@ func ParseDesc(input string) Parsed {
 	desc := TakeWhile(sep.rest, ParseAnything())
 
 	return Parsed{
+
 		parsed: desc.parsed,
 		rest:   desc.rest,
 	}
@@ -87,15 +98,32 @@ func ParseFilePosition(input string) Parsed {
 	p = TakeWhile(line.rest, ParseSeparator())
 	col := TakeWhile(p.rest, ParseNumber())
 
+	if !isNumber(line.parsed) || !isNumber(col.parsed) {
+		return Parsed{
+			parsed: "",
+			rest:   input,
+		}
+	}
+
 	return Parsed{
 		parsed: line.parsed + ":" + col.parsed,
 		rest:   col.rest,
 	}
 }
 
-func ParseLine(input string) (Filematch, error) {
+func isNumber(str string) bool {
+	if _, err := strconv.Atoi(str); err == nil {
+		return true
+	}
+	return false
+}
+
+func ParseLine(input string, withFile bool) (Filematch, error) {
 	p := TakeWhile(input, ParseSeparator())
-	file := ParseFilePath(p.rest)
+	file := p
+	if withFile {
+		file = ParseFilePath(p.rest)
+	}
 	position := ParseFilePosition(file.rest)
 	desc := ParseDesc(position.rest)
 
