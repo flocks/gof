@@ -42,6 +42,7 @@ func main() {
 func FindFiles(input string) []Filematch {
 	var result []Filematch
 	var currentFileMatch *Filematch
+	hasError := false
 
 	lines := strings.Split(string(input), "\n")
 
@@ -49,11 +50,14 @@ func FindFiles(input string) []Filematch {
 		fullLine, _ := ParseLine(line, true)
 		nestedLine, _ := ParseLine(line, false)
 
+		if hasFileError(fullLine) || hasFileError(nestedLine) {
+			hasError = true
+		}
+
 		if hasOnlyError(nestedLine) && currentFileMatch != nil {
 			nestedLine.SetFile(currentFileMatch.FilePath)
 			result = append(result, nestedLine)
 		} else if fullLine.FilePath != "" {
-
 			if !strings.HasPrefix(fullLine.FilePath, "/") {
 				pwd, _ := os.LookupEnv("PWD")
 				filePath := pwd + "/" + fullLine.FilePath
@@ -66,7 +70,8 @@ func FindFiles(input string) []Filematch {
 		}
 	}
 
-	if hasAtLeastOneError(result) {
+	// if we parse at least a line with error, we can consider all matches should have line/col/desc
+	if hasError {
 		return removeFromList(result, func(file Filematch) bool {
 			return file.Col == 0 && file.Line == 0
 		})
@@ -79,21 +84,12 @@ func hasOnlyFile(file Filematch) bool {
 	return file.Col == 0 && file.Line == 0 && file.Desc == "" && file.FilePath != ""
 }
 
-func hasError(file Filematch) bool {
+func hasFileError(file Filematch) bool {
 	return file.Col != 0 && file.Line != 0 && file.Desc != ""
 }
 
 func hasOnlyError(file Filematch) bool {
-	return hasError(file) && file.FilePath == ""
-}
-
-func hasAtLeastOneError(files []Filematch) bool {
-	for _, val := range files {
-		if val.Line != 0 || val.Col != 0 {
-			return true
-		}
-	}
-	return false
+	return hasFileError(file) && file.FilePath == ""
 }
 
 func removeFromList(files []Filematch, predicate func(Filematch) bool) []Filematch {
