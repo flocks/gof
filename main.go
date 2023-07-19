@@ -106,15 +106,6 @@ func removeFromList(files []Filematch, predicate func(Filematch) bool) []Filemat
 	return result
 }
 
-func updateFilePath(file Filematch) Filematch {
-	if !strings.HasPrefix(file.FilePath, "/") {
-		pwd, _ := os.LookupEnv("PWD")
-		filePath := pwd + "/" + file.FilePath
-		file.FilePath = filePath
-	}
-	return file
-}
-
 func printFiles(files []Filematch) {
 	for _, file := range files {
 		fmt.Printf(`%v:%v:%v:%v`, file.FilePath, file.Line, file.Col, file.Desc)
