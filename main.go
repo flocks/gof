@@ -80,10 +80,6 @@ func FindFiles(input string) []Filematch {
 	return result
 }
 
-func hasOnlyFile(file Filematch) bool {
-	return file.Col == 0 && file.Line == 0 && file.Desc == "" && file.FilePath != ""
-}
-
 func hasFileError(file Filematch) bool {
 	return file.Col != 0 && file.Line != 0 && file.Desc != ""
 }
