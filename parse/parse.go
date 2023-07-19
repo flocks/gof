@@ -57,7 +57,7 @@ func ParseSeparator() func(string) Parsed {
 }
 
 func ParseFilepathChar() func(string) Parsed {
-	return getParser("([a-zA-Z-0-9]|/|\\.)")
+	return getParser("([a-zA-Z-0-9]|/|\\.|_)")
 }
 func ParseAnything() func(string) Parsed {
 	return getParser("[^$]")
