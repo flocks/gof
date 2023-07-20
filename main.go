@@ -17,6 +17,7 @@ var (
 func main() {
 	stdin := ""
 	scanner := bufio.NewScanner(os.Stdin)
+	var onlyPath int
 	for scanner.Scan() {
 		stdin = stdin + "\n" + scanner.Text()
 	}
@@ -27,9 +28,17 @@ func main() {
 	app := &cli.App{
 		Name:  "gof",
 		Usage: "extract files from stdin",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:    "onlyPath",
+				Aliases: []string{"o"},
+				Usage:   "print only files path without line/col/desc",
+				Count:   &onlyPath,
+			},
+		},
 		Action: func(cCtx *cli.Context) error {
 			files := FindFiles(stdin)
-			printFiles(files)
+			printFiles(files, onlyPath > 0)
 			return nil
 		},
 	}
@@ -98,9 +107,13 @@ func removeFromList(files []Filematch, predicate func(Filematch) bool) []Filemat
 	return result
 }
 
-func printFiles(files []Filematch) {
+func printFiles(files []Filematch, onlyPath bool) {
 	for _, file := range files {
-		fmt.Printf(`%v:%v:%v:%v`, file.FilePath, file.Line, file.Col, file.Desc)
+		if onlyPath {
+			fmt.Printf(`%v`, file.FilePath)
+		} else {
+			fmt.Printf(`%v:%v:%v:%v`, file.FilePath, file.Line, file.Col, file.Desc)
+		}
 		fmt.Println()
 	}
 }
